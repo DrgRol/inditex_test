@@ -1,0 +1,123 @@
+openapi: 3.0.1
+info:
+  title: prices_v1
+  description: Api for prices
+  version: 1.0.0
+servers:
+  - url: /prices/v1
+paths:
+  /prices/{product_id}:
+    get:
+      tags:
+        - prices
+      description: Servicio para obtener todos los consumidores disponibles
+      operationId: findAllConsumers
+      parameters:
+        - name: product_id
+          in: path
+          description: product identifier
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: date
+          in: query
+          description: application date.
+          required: true
+          schema:
+            type: string
+            format: date-time
+            default: 1
+        - name: brand_id
+          in: query
+          description: Group chain
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: succes
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/price'
+        '400':
+          description: "There was something wrong in the request and therefore could\
+            \ not be processed (headers, json syntax/content)"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error_response'
+        '500':
+          description: Unknown Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error_response'
+components:
+  schemas:
+    prices:
+      title: prices
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/price'
+    price:
+      title: price
+      type: object
+      properties:
+        product_id:
+          type: integer
+          description: id regla de definición
+          format: int64
+        brand_id:
+          type: integer
+          description: id regla atomica
+          format: int64
+        price_list:
+          type: string
+          description: Identifier of the applicable price list
+        start_date:
+          type: string
+          description: start date where the indicated price applies
+        end_date:
+          type: string
+          description: end date where the indicated price applies
+        price:
+          type: number
+          description: final sale price
+    error_response:
+      title: Error en la aplicacion encapsulado
+      required:
+        - error
+      type: object
+      properties:
+        error:
+          $ref: '#/components/schemas/error'
+      description: error en la aplicacion encapsulado
+    error:
+      title: Error en la aplicacion
+      required:
+        - message
+        - request_id
+      type: object
+      properties:
+        message:
+          type: string
+          description: Descripcion del resultado erroneo
+        request_id:
+          type: string
+          description: Codigo de peticion unico.
+        details:
+          type: object
+          properties: { }
+          description: objeto con el detalle adicional de errores que desee aportar
+      description: error en la aplicacion
+  securitySchemes:
+    WSO2:
+      type: apiKey
+      name: Authorization
+      in: header
+x-original-swagger-version: "2.0"
